@@ -122,4 +122,25 @@ export async function getCurrentUser(token: string) {
   };
 }
 
+export async function logoutUser(token: string) {
+  const [resultHeader] = await db
+    .delete(sessions)
+    .where(eq(sessions.token, token));
+
+  if (!resultHeader || resultHeader.affectedRows === 0) {
+    return {
+      success: false,
+      code: "UNAUTHORIZED",
+      message: "Unauthorized",
+    };
+  }
+
+  return {
+    success: true,
+    message: "User logout successfully",
+    data: "OK",
+  };
+}
+
+
 

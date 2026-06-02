@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { registerUser, loginUser, getCurrentUser } from "../services/users-service";
+import { registerUser, loginUser, getCurrentUser, logoutUser } from "../services/users-service";
 
 export const usersRoute = new Elysia({ prefix: "/api" })
   .post("/users", async ({ body, set }) => {
@@ -53,39 +53,67 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       password: t.String(),
     })
   })
-  .get("/users/current", async ({ headers, set }) => {
-    const authHeader = headers["authorization"];
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      set.status = 401;
-      return {
-        success: false,
-        message: "Unauthorized",
-      };
+  .guard({
+    beforeHandle({ headers, set }) {
+      const authHeader = headers["authorization"];
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+        };
+      }
+      
+      const token = authHeader.split(" ")[1];
+      if (!token) {
+        set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+        };
+      }
     }
-    
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      set.status = 401;
+  }, (app) => app
+    .derive(({ headers }) => {
+      const authHeader = headers["authorization"]!;
+      const token = authHeader.split(" ")[1] || "";
+      return { token };
+    })
+    .get("/users/current", async ({ token, set }) => {
+      const result = await getCurrentUser(token);
+      if (!result.success) {
+        set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+        };
+      }
+      
+      set.status = 200;
       return {
-        success: false,
-        message: "Unauthorized",
+        success: true,
+        message: result.message,
+        data: result.data,
       };
-    }
+    })
+    .post("/users/logout", async ({ token, set }) => {
+      const result = await logoutUser(token);
+      if (!result.success) {
+        set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+        };
+      }
+      
+      set.status = 200;
+      return {
+        success: true,
+        message: result.message,
+        data: result.data,
+      };
+    })
+  );
 
-    const result = await getCurrentUser(token);
-    if (!result.success) {
-      set.status = 401;
-      return {
-        success: false,
-        message: "Unauthorized",
-      };
-    }
-    
-    set.status = 200;
-    return {
-      success: true,
-      message: result.message,
-      data: result.data,
-    };
-  });
+
 
