@@ -5,6 +5,6 @@ export default defineConfig({
   schema: "./src/db/schema.ts",
   out: "./drizzle",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "mysql://root:password@localhost:3306/bun_elysia_db",
+    url: process.env.DATABASE_URL || "mysql://root:password@localhost:3306/bunjs",
   },
 });
