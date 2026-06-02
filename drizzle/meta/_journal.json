@@ -15,6 +15,13 @@
       "when": 1780392772687,
       "tag": "0001_good_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1780396400174,
+      "tag": "0002_goofy_blink",
+      "breakpoints": true
     }
   ]
 }

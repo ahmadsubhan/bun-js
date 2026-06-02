@@ -1,4 +1,4 @@
-import { mysqlTable, serial, varchar, timestamp } from "drizzle-orm/mysql-core";
+import { mysqlTable, serial, varchar, timestamp, bigint } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
   id: serial("id").primaryKey(),
@@ -7,4 +7,11 @@ export const users = mysqlTable("users", {
   password: varchar("password", { length: 255 }).notNull(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const sessions = mysqlTable("sessions", {
+  id: serial("id").primaryKey(),
+  token: varchar("token", { length: 255 }).notNull(),
+  user_id: bigint("user_id", { mode: "number", unsigned: true }).notNull().references(() => users.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at").defaultNow(),
 });
