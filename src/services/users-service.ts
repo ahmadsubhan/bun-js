@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { users } from "../db/schema";
+import { users, sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export async function registerUser(data: { name: string; email: string; password: string }) {
@@ -47,3 +47,49 @@ export async function registerUser(data: { name: string; email: string; password
     data: userData,
   };
 }
+
+export async function loginUser(data: { email: string; password: string }) {
+  const { email, password } = data;
+
+  // 1. Cari user berdasarkan email
+  const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  if (!user) {
+    return {
+      success: false,
+      code: "INVALID_CREDENTIALS",
+      message: "Email atau Password salah",
+    };
+  }
+
+  // 2. Verifikasi password dengan hash di DB
+  const isPasswordValid = await Bun.password.verify(password, user.password);
+  if (!isPasswordValid) {
+    return {
+      success: false,
+      code: "INVALID_CREDENTIALS",
+      message: "Email atau Password salah",
+    };
+  }
+
+  // 3. Buat token session UUID
+  const token = crypto.randomUUID();
+
+  // 4. Simpan session ke database
+  await db.insert(sessions).values({
+    token,
+    user_id: user.id,
+  });
+
+  // 5. Kembalikan data user beserta token (tanpa password)
+  const { password: _, ...userData } = user;
+
+  return {
+    success: true,
+    message: "User login successfully",
+    data: {
+      ...userData,
+      token,
+    },
+  };
+}
+
