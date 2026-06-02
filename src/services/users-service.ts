@@ -123,21 +123,17 @@ export async function getCurrentUser(token: string) {
 }
 
 export async function logoutUser(token: string) {
-  const [session] = await db
-    .select()
-    .from(sessions)
-    .where(eq(sessions.token, token))
-    .limit(1);
+  const [resultHeader] = await db
+    .delete(sessions)
+    .where(eq(sessions.token, token));
 
-  if (!session) {
+  if (!resultHeader || resultHeader.affectedRows === 0) {
     return {
       success: false,
       code: "UNAUTHORIZED",
       message: "Unauthorized",
     };
   }
-
-  await db.delete(sessions).where(eq(sessions.token, token));
 
   return {
     success: true,
