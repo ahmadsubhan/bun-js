@@ -76,7 +76,7 @@ export const usersRoute = new Elysia({ prefix: "/api" })
   }, (app) => app
     .derive(({ headers }) => {
       const authHeader = headers["authorization"];
-      const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : "";
+      const token = authHeader?.startsWith("Bearer ") ? (authHeader.split(" ")[1] ?? "") : "";
       return { token };
     })
     .get("/users/current", async ({ token, set }) => {
