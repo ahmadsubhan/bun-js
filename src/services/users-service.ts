@@ -2,6 +2,11 @@ import { db } from "../db";
 import { users, sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
 
+/**
+ * Mendaftarkan pengguna baru ke dalam sistem.
+ * Fungsi ini memvalidasi apakah email sudah terdaftar, melakukan hash password,
+ * menyimpan pengguna baru ke database, dan mengembalikan data profil pengguna yang berhasil didaftarkan.
+ */
 export async function registerUser(data: { name: string; email: string; password: string }) {
   const { name, email, password } = data;
 
@@ -48,6 +53,11 @@ export async function registerUser(data: { name: string; email: string; password
   };
 }
 
+/**
+ * Melakukan autentikasi/login pengguna.
+ * Fungsi ini memverifikasi email dan password pengguna, membuat token sesi baru (UUID),
+ * menyimpan sesi tersebut ke database, dan mengembalikan informasi pengguna beserta token loginnya.
+ */
 export async function loginUser(data: { email: string; password: string }) {
   const { email, password } = data;
 
@@ -93,6 +103,10 @@ export async function loginUser(data: { email: string; password: string }) {
   };
 }
 
+/**
+ * Mengambil informasi detail pengguna yang sedang masuk (login) berdasarkan token sesi.
+ * Fungsi ini mencocokkan token sesi pada tabel sessions dengan data pengguna pada tabel users.
+ */
 export async function getCurrentUser(token: string) {
   const [result] = await db
     .select({
@@ -122,6 +136,10 @@ export async function getCurrentUser(token: string) {
   };
 }
 
+/**
+ * Mengeluarkan pengguna (logout) dari sistem.
+ * Fungsi ini menghapus token sesi yang bersangkutan dari database sessions untuk mengakhiri sesi aktif.
+ */
 export async function logoutUser(token: string) {
   const [resultHeader] = await db
     .delete(sessions)
