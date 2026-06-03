@@ -28,7 +28,12 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       name: t.String({ minLength: 1, maxLength: 255 }),
       email: t.String({ format: "email" }),
       password: t.String({ minLength: 6 }),
-    })
+    }),
+    detail: {
+      tags: ["Users"],
+      summary: "Registrasi Pengguna Baru",
+      description: "Mendaftarkan pengguna baru ke database dan mengembalikan detail profil tanpa password."
+    }
   })
   .post("/users/login", async ({ body, set }) => {
     const result = await loginUser(body);
@@ -51,7 +56,12 @@ export const usersRoute = new Elysia({ prefix: "/api" })
     body: t.Object({
       email: t.String({ format: "email" }),
       password: t.String(),
-    })
+    }),
+    detail: {
+      tags: ["Users"],
+      summary: "Login Pengguna",
+      description: "Melakukan autentikasi menggunakan email dan password, lalu menghasilkan token sesi."
+    }
   })
   .guard({
     beforeHandle({ headers, set }) {
@@ -95,6 +105,15 @@ export const usersRoute = new Elysia({ prefix: "/api" })
         message: result.message,
         data: result.data,
       };
+    }, {
+      headers: t.Object({
+        authorization: t.String({ error: "Authorization header is required", default: "Bearer <token>", description: "Format: Bearer <token>" })
+      }),
+      detail: {
+        tags: ["Users"],
+        summary: "Ambil Profil Pengguna Saat Ini",
+        description: "Mengambil detail profil pengguna yang sedang login berdasarkan token autentikasi di header."
+      }
     })
     .post("/users/logout", async ({ token, set }) => {
       const result = await logoutUser(token);
@@ -112,6 +131,15 @@ export const usersRoute = new Elysia({ prefix: "/api" })
         message: result.message,
         data: result.data,
       };
+    }, {
+      headers: t.Object({
+        authorization: t.String({ error: "Authorization header is required", default: "Bearer <token>", description: "Format: Bearer <token>" })
+      }),
+      detail: {
+        tags: ["Users"],
+        summary: "Logout Pengguna",
+        description: "Mengakhiri sesi aktif dengan menghapus token dari database."
+      }
     })
   );
 
