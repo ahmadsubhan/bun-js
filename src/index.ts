@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { db } from "./db";
 import { users } from "./db/schema";
 import { usersRoute } from "./routes/users-route";
@@ -25,13 +25,19 @@ export const app = new Elysia()
       timestamp: new Date().toISOString()
     };
   }, {
+    response: {
+      200: t.Object({
+        message: t.String(),
+        timestamp: t.String()
+      })
+    },
     detail: {
       tags: ["General"],
       summary: "Endpoint selamat datang",
       description: "Menampilkan pesan sambutan dari framework Elysia, Bun, dan Drizzle."
     }
   })
-  .get("/users", async () => {
+  .get("/users", async ({ set }) => {
     try {
       // Query sederhana untuk mengecek koneksi database
       const allUsers = await db.select().from(users);
@@ -40,6 +46,7 @@ export const app = new Elysia()
         data: allUsers
       };
     } catch (error: any) {
+      set.status = 500;
       return {
         success: false,
         message: "Failed to connect to database or query users. Make sure MySQL is running.",
@@ -47,6 +54,23 @@ export const app = new Elysia()
       };
     }
   }, {
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        data: t.Array(t.Object({
+          id: t.Number(),
+          name: t.String(),
+          email: t.String(),
+          created_at: t.Nullable(t.Any()),
+          updated_at: t.Nullable(t.Any())
+        }))
+      }),
+      500: t.Object({
+        success: t.Boolean(),
+        message: t.String(),
+        error: t.String()
+      })
+    },
     detail: {
       tags: ["General"],
       summary: "Mengambil semua pengguna (Pengecekan DB)",

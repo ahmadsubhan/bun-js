@@ -29,6 +29,23 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       email: t.String({ format: "email" }),
       password: t.String({ minLength: 6 }),
     }),
+    response: {
+      201: t.Object({
+        success: t.Boolean(),
+        message: t.String(),
+        data: t.Object({
+          id: t.Number(),
+          name: t.String(),
+          email: t.String(),
+          created_at: t.Nullable(t.Any()),
+          updated_at: t.Nullable(t.Any())
+        })
+      }),
+      400: t.Object({
+        success: t.Boolean(),
+        message: t.String()
+      })
+    },
     detail: {
       tags: ["Users"],
       summary: "Registrasi Pengguna Baru",
@@ -57,6 +74,24 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       email: t.String({ format: "email" }),
       password: t.String(),
     }),
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        message: t.String(),
+        data: t.Object({
+          id: t.Number(),
+          name: t.String(),
+          email: t.String(),
+          created_at: t.Nullable(t.Any()),
+          updated_at: t.Nullable(t.Any()),
+          token: t.String()
+        })
+      }),
+      401: t.Object({
+        success: t.Boolean(),
+        message: t.String()
+      })
+    },
     detail: {
       tags: ["Users"],
       summary: "Login Pengguna",
@@ -109,6 +144,23 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       headers: t.Object({
         authorization: t.String({ error: "Authorization header is required", default: "Bearer <token>", description: "Format: Bearer <token>" })
       }),
+      response: {
+        200: t.Object({
+          success: t.Boolean(),
+          message: t.String(),
+          data: t.Object({
+            id: t.Number(),
+            name: t.String(),
+            email: t.String(),
+            created_at: t.Nullable(t.Any()),
+            updated_at: t.Nullable(t.Any())
+          })
+        }),
+        401: t.Object({
+          success: t.Boolean(),
+          message: t.String()
+        })
+      },
       detail: {
         tags: ["Users"],
         summary: "Ambil Profil Pengguna Saat Ini",
@@ -135,6 +187,17 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       headers: t.Object({
         authorization: t.String({ error: "Authorization header is required", default: "Bearer <token>", description: "Format: Bearer <token>" })
       }),
+      response: {
+        200: t.Object({
+          success: t.Boolean(),
+          message: t.String(),
+          data: t.String()
+        }),
+        401: t.Object({
+          success: t.Boolean(),
+          message: t.String()
+        })
+      },
       detail: {
         tags: ["Users"],
         summary: "Logout Pengguna",
