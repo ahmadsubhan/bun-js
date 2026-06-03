@@ -25,7 +25,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(201);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(true);
       expect(body.message).toBe("User created successfully");
       expect(body.data.name).toBe("John Doe");
@@ -61,7 +61,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(400);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(false);
       expect(body.message).toBe("User already exists");
     });
@@ -161,7 +161,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(200);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(true);
       expect(body.message).toBe("User login successfully");
       expect(body.data.token).toBeDefined();
@@ -180,7 +180,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(401);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(false);
       expect(body.message).toBe("Email atau Password salah");
     });
@@ -198,7 +198,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(401);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(false);
       expect(body.message).toBe("Email atau Password salah");
     });
@@ -246,7 +246,7 @@ describe("Users API", () => {
           }),
         })
       );
-      const loginBody = await loginRes.json();
+      const loginBody = await loginRes.json() as any;
       token = loginBody.data.token;
     });
 
@@ -261,7 +261,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(200);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(true);
       expect(body.data.name).toBe("Alice");
       expect(body.data.email).toBe("alice@example.com");
@@ -275,7 +275,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(401);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(false);
       expect(body.message).toBe("Unauthorized");
     });
@@ -334,7 +334,7 @@ describe("Users API", () => {
           }),
         })
       );
-      const loginBody = await loginRes.json();
+      const loginBody = await loginRes.json() as any;
       token = loginBody.data.token;
     });
 
@@ -350,7 +350,7 @@ describe("Users API", () => {
       );
 
       expect(response.status).toBe(200);
-      const body = await response.json();
+      const body = await response.json() as any;
       expect(body.success).toBe(true);
       expect(body.message).toBe("User logout successfully");
 
